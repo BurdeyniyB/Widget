@@ -1,0 +1,74 @@
+.widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(0deg, #272727, #1a1a1a);
+    color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 250px;
+    margin: 20px auto;
+    gap: 50px;
+}
+
+
+.widget__display {
+    background-color: #222; 
+    border-radius: 50%; 
+    padding: 20px;
+    width: 100px; 
+    height: 100px; 
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.widget__title {
+    font-size: 2.5rem;
+}
+
+.widget__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.widget__controls {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.widget__button {
+    background: linear-gradient(0deg, #0081b4, #002d8d);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.15s;
+}
+
+.widget__button:hover {
+    transform: scale(1.02);
+    background: linear-gradient(0deg, #008fc7, #0035a8);
+}
+
+.widget__button--reset {
+    background: linear-gradient(0deg, #b40000, #470000);
+}
+
+.widget__button--reset:hover {
+    background: linear-gradient(0deg, #c70000, #680000);
+}
+
+.widget__button--remove {
+    background: linear-gradient(0deg, #303030, #0f0f0f);
+}
+
+.widget__button--remove:hover {
+    background: linear-gradient(0deg, rgb(110, 110, 110), #303030);
+}
