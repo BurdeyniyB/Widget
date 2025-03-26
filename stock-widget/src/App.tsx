@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { WidgetProvider, useWidgetContext } from './context/WidgetContext';
+import { WidgetProvider } from './context/WidgetContext';
 import "./styles/global.css"
 import WidgetLoader from './components/WidgetLoader';
+import { useWidgets } from './hooks/useWidgets';
 
 const AppContent: React.FC = () => {
-  const { addWidget } = useWidgetContext();
+  const { addWidget } = useWidgets();
   const [stopwatchCount, setStopwatchCount] = useState(1);
   const [timerCount, setTimerCount] = useState(1);
 

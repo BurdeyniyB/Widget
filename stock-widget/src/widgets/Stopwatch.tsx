@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { eventBus } from "./Event/EventBus";
-import { timerManager } from "../utils/TimeManager"; // Імпортуємо TimerManager
+import React, { useState, useEffect, useCallback } from "react";
+import { timerManager } from "../utils/TimerManager";
 import styles from "../styles/Widget.module.css";
 
 interface StopwatchProps {
@@ -8,38 +7,34 @@ interface StopwatchProps {
     removeWidget: (id: string) => void;
 }
 
-const Stopwatch: React.FC<StopwatchProps> = ({ id, removeWidget }) => {
+const Stopwatch: React.FC<StopwatchProps> = React.memo(({ id, removeWidget }) => {
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
 
     useEffect(() => {
-        // Якщо таймер запускається, ми запускаємо його через менеджер
         if (isRunning) {
             timerManager.startTime(id, () => {
                 setTime((prev) => Math.round((prev + 0.1) * 10) / 10);
             }, 100);
         } else {
-            timerManager.stopTime(id); // Якщо таймер зупиняється, зупиняємо його
+            timerManager.stopTime(id);
         }
 
-        // Очищуємо таймер при демонтажі
         return () => {
             timerManager.stopTime(id);
         };
     }, [isRunning, id]);
 
-    useEffect(() => {
-        // Define the event handler for resetTimer
-        const resetHandler = () => setTime(0);
+    const resetStopwatch = useCallback(() => {
+        timerManager.stopTime(id);
+        setIsRunning(false);
+        setTime(0);
+    }, [id]);
 
-        // Subscribe to resetTimer event
-        eventBus.on("resetTimer", resetHandler);
 
-        // Cleanup: Unsubscribe when the component unmounts or when dependencies change
-        return () => {
-            eventBus.off("resetTimer", resetHandler);
-        };
-    }, []); // Empty dependency array to subscribe only once when the component mounts
+    const handleRemoveWidget = useCallback(() => {
+        removeWidget(id);
+    }, [id, removeWidget]);
 
     return (
         <div className={styles.widget}>
@@ -48,19 +43,19 @@ const Stopwatch: React.FC<StopwatchProps> = ({ id, removeWidget }) => {
             </div>
             <div className={styles.widget__buttons}>
                 <div className={styles.widget__controls}>
-                    <button className={styles.widget__button} onClick={() => setIsRunning(!isRunning)}>
+                    <button className={styles.widget__button} onClick={() => setIsRunning((prev) => !prev)}>
                         {isRunning ? "Pause" : "Start"}
                     </button>
-                    <button className={`${styles.widget__button} ${styles["widget__button--reset"]}`} onClick={() => eventBus.emit("resetTimer")}>
+                    <button className={`${styles.widget__button} ${styles["widget__button--reset"]}`} onClick={resetStopwatch}>
                         Reset
                     </button>
                 </div>
-                <button className={`${styles.widget__button} ${styles["widget__button--remove"]}`} onClick={() => removeWidget(id)}>
+                <button className={`${styles.widget__button} ${styles["widget__button--remove"]}`} onClick={handleRemoveWidget}>
                     Remove
                 </button>
             </div>
         </div>
     );
-};
+});
 
 export default Stopwatch;
