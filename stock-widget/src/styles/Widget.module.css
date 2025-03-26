@@ -38,10 +38,12 @@
 .widget__controls {
     display: flex;
     flex-direction: row;
+    justify-content: center;
     gap: 10px;
 }
 
 .widget__button {
+    min-width: 120px;
     background: linear-gradient(0deg, #0081b4, #002d8d);
     color: white;
     border: none;

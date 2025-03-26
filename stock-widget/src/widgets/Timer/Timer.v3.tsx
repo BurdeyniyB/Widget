@@ -1,15 +1,18 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { timerManager } from "../utils/TimerManager";
-import styles from "../styles/Widget.module.css";
+import React, { useState, useEffect, useCallback, useContext } from "react";
+import { timerManager } from "../../utils/TimerManager";
+import styles from "../../styles/Widget.module.css";
+import { WidgetContext } from "../../context/WidgetContext";
 
 interface TimerProps {
     id: string;
+    version: number;
     removeWidget: (id: string) => void;
 }
 
-const Timer: React.FC<TimerProps> = React.memo(({ id, removeWidget }) => {
+const Timer: React.FC<TimerProps> = React.memo(({ id, version, removeWidget }) => {
     const [time, setTime] = useState(60);
     const [isRunning, setIsRunning] = useState(false);
+    const widgetContext = useContext(WidgetContext);
 
     useEffect(() => {
         if (isRunning && time > 0) {
@@ -37,8 +40,15 @@ const Timer: React.FC<TimerProps> = React.memo(({ id, removeWidget }) => {
         removeWidget(id);
     }, [id, removeWidget]);
 
+    const handleUpdateWidget = useCallback(() => {
+        if (widgetContext) {
+            widgetContext.updateWidget(id, 'Timer', version + 1);
+        }
+    }, [id, widgetContext]);
+
     return (
         <div className={styles.widget}>
+            <h2>Timer 3</h2>
             <div className={styles.widget__display}>
                 <h3 className={styles.widget__title}>{time}s</h3>
             </div>
@@ -51,9 +61,14 @@ const Timer: React.FC<TimerProps> = React.memo(({ id, removeWidget }) => {
                         Reset
                     </button>
                 </div>
-                <button className={`${styles.widget__button} ${styles["widget__button--remove"]}`} onClick={handleRemoveWidget}>
-                    Remove
-                </button>
+                <div className={styles.widget__controls}>
+                    <button className={styles.widget__button} onClick={handleUpdateWidget}>
+                        Update Widget
+                    </button>
+                    <button className={`${styles.widget__button} ${styles["widget__button--remove"]}`} onClick={handleRemoveWidget}>
+                        Remove
+                    </button>
+                </div>
             </div>
         </div>
     );
