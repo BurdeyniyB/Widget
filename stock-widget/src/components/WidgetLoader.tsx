@@ -2,14 +2,16 @@ import React, { Suspense } from "react";
 import { useWidgets } from "../hooks/useWidgets";
 
 const WidgetLoader: React.FC = () => {
-    const { widgets } = useWidgets(); // Отримуємо віджети з контексту
+    const { widgets, removeWidget } = useWidgets();
 
     return (
-        <div>
+        <div className="widget__container">
             {widgets.map(({ id, component: Component }) => (
-                <Suspense fallback={<div>Loading {id}...</div>} key={id}>
-                    <Component />
-                </Suspense>
+                <div key={id} className="widget">
+                    <Suspense fallback={<div>Loading {id}...</div>}>
+                        <Component id={id} removeWidget={() => removeWidget(id)} />
+                    </Suspense>
+                </div>
             ))}
         </div>
     );

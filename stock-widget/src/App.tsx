@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { WidgetProvider, useWidgetContext } from './context/WidgetContext';
 import "./styles/global.css"
+import WidgetLoader from './components/WidgetLoader';
 
 const AppContent: React.FC = () => {
-  const { widgets, addWidget, removeWidget } = useWidgetContext();
+  const { addWidget } = useWidgetContext();
   const [stopwatchCount, setStopwatchCount] = useState(1);
   const [timerCount, setTimerCount] = useState(1);
 
@@ -28,15 +29,7 @@ const AppContent: React.FC = () => {
         </button>
       </div>
 
-      <div className="widget__container">
-        {widgets.map(({ id, component: Component }) => (
-          <div key={id} className="widget">
-            <React.Suspense fallback={<div>Loading...</div>}>
-              <Component id={id} removeWidget={removeWidget} />
-            </React.Suspense>
-          </div>
-        ))}
-      </div>
+     <WidgetLoader />
     </div>
   );
 };

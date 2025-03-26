@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { eventBus } from "./Event/EventBus";
+import { timerManager } from "../utils/TimeManager";
 import styles from "../styles/Widget.module.css";
 
 interface TimerProps {
@@ -12,19 +13,27 @@ const Timer: React.FC<TimerProps> = ({ id, removeWidget }) => {
     const [isRunning, setIsRunning] = useState(false);
 
     useEffect(() => {
-        let interval: number | null = null;
         if (isRunning && time > 0) {
-            interval = window.setInterval(() => {
+            timerManager.startTime(id, () => {
                 setTime((prev) => Math.round((prev - 0.1) * 10) / 10);
             }, 100);
         } else if (time === 0) {
-            setIsRunning(false);
-            eventBus.emit("timerFinished");
+            timerManager.stopTime(id);
         }
+
         return () => {
-            if (interval) clearInterval(interval);
+            timerManager.stopTime(id);
         };
     }, [isRunning, time]);
+
+    useEffect(() => {
+        const resetHandler = () => setTime(60);  
+        eventBus.on("resetTimer", resetHandler);
+
+        return () => {
+            eventBus.off("resetTimer", resetHandler);
+        };
+    }, []);
 
     return (
         <div className={styles.widget}>

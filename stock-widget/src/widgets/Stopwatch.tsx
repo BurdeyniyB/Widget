@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { eventBus } from "./Event/EventBus";
+import { timerManager } from "../utils/TimeManager"; // Імпортуємо TimerManager
 import styles from "../styles/Widget.module.css";
 
 interface StopwatchProps {
@@ -12,16 +13,33 @@ const Stopwatch: React.FC<StopwatchProps> = ({ id, removeWidget }) => {
     const [isRunning, setIsRunning] = useState(false);
 
     useEffect(() => {
-        let interval: number | null = null;
+        // Якщо таймер запускається, ми запускаємо його через менеджер
         if (isRunning) {
-            interval = window.setInterval(() => {
+            timerManager.startTime(id, () => {
                 setTime((prev) => Math.round((prev + 0.1) * 10) / 10);
             }, 100);
+        } else {
+            timerManager.stopTime(id); // Якщо таймер зупиняється, зупиняємо його
         }
+
+        // Очищуємо таймер при демонтажі
         return () => {
-            if (interval) clearInterval(interval);
+            timerManager.stopTime(id);
         };
-    }, [isRunning]);
+    }, [isRunning, id]);
+
+    useEffect(() => {
+        // Define the event handler for resetTimer
+        const resetHandler = () => setTime(0);
+
+        // Subscribe to resetTimer event
+        eventBus.on("resetTimer", resetHandler);
+
+        // Cleanup: Unsubscribe when the component unmounts or when dependencies change
+        return () => {
+            eventBus.off("resetTimer", resetHandler);
+        };
+    }, []); // Empty dependency array to subscribe only once when the component mounts
 
     return (
         <div className={styles.widget}>
